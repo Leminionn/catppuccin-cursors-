@@ -1,0 +1,34 @@
+name: "Custom Cursor Release"
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+      - name: convert for windows
+        run: |
+          Get-ChildItem -Path "cursors" -Filter *.zip | ForEach-Object {
+            Expand-Archive -Path $_.FullName -DestinationPath "destination_folder"
+          }
+          python convert.py
+          Remove-Item -Path ./cursors/*.zip
+          Get-ChildItem -Path "cursors" -Directory | ForEach-Object {
+            Compress-Archive -Path $_.FullName -DestinationPath "$($_.Name).zip"
+          }
+
+      - uses: svenstaro/upload-release-action@master
+        with:
+          file: ./cursors/*.zip
+          release_name: Catppuccin Cursors
+          file_glob: true
