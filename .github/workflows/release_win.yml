@@ -20,12 +20,14 @@ jobs:
       - name: convert for windows
         run: |
           Get-ChildItem -Path "cursors" -Filter *.zip | ForEach-Object {
-            Expand-Archive -Path $_.FullName -DestinationPath "destination_folder"
+            $folderPath = $_.FullName -replace '\.zip$', ''
+            Expand-Archive -Path $_.FullName -DestinationPath $folderPath
           }
+          pip install -r requirements.txt
           python convert.py
-          Remove-Item -Path ./cursors/*.zip
+          Remove-Item -Path ./cursors/*.zip -Force
           Get-ChildItem -Path "cursors" -Directory | ForEach-Object {
-            Compress-Archive -Path $_.FullName -DestinationPath "$($_.Name).zip"
+            Compress-Archive -Path $_.FullName -DestinationPath "$($_.FullName).zip"
           }
 
       - uses: svenstaro/upload-release-action@master
