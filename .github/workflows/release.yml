@@ -1,9 +1,10 @@
 name: "Cursor release"
 
-# on:
-#   push:
-#     tags:
-#       - "*"
+on:
+  # push:
+  #   tags:
+  #     - "*"
+  workflow_dispatch:
 
 jobs:
   release:
